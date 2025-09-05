@@ -191,28 +191,4 @@ perimetro1 (Circulo _ r) = 2*pi*r
 perimetro1 (Retangulo p1 p2) = abs(posx p2 - posx p1) * 2 + abs(posy p2 - posy p1) * 2
 perimetro1 (Triangulo p1 p2 p3) = dist1 p1 p2 + dist1 p2 p3 + dist1 p1 p3
 
---8) 
-
---a) testa se um Char  ́e uma minuscula.
-isLower1 :: Char -> Bool
-isLower1 a = ord a >= ord 'a' && ord a <= ord 'z'
-
---b) verifica se é digito
-isDigit1 :: Char -> Bool
-isDigit1 a = ord a >= ord '0' && ord a <= ord '9'
-
---c)
-isAlpha1 :: Char -> Bool
-isAlpha1 a = ord a >= ord 'A' && ord a <= ord 'z'
-
---d)
-toUpper1 :: Char -> Char
-toUpper1 ch = if isLower1 ch then chr ((ord ch) - 32) else ch
-
---e)
-intToDigit1 :: Int -> Char
-intToDigit1 a = chr (a + 48)
-
---f)
-digitToInt1 :: Char -> Int
-digitToInt1 a = ord (a) - 48
+--8)

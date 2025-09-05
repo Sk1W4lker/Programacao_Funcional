@@ -1,26 +1,31 @@
 --1) constrói a lista dos números inteiros compreendidos entre dois limites.
+-- > enumFromTo 1 5 = [1,2,3,4,5]
 enumFromTo1 :: Int -> Int -> [Int]
 enumFromTo1 start end 
     | start > end = []
     | otherwise = start : enumFromTo1 (start + 1) end
 
 --2) constrói a lista dos números inteiros compreendidos entre dois limites e espaçados de um valor constante.
+-- > enumFromThenTo 1 3 10 = [1,3,5,7,9]
 enumFromThenTo1 :: Int -> Int -> Int -> [Int]
 enumFromThenTo1 start next end
     | start > end && next >= start || start < end && next < start = []
     | otherwise = start : enumFromThenTo1 next (next + (next-start)) end
 
 --3) concatena duas listas
+-- > (++) [1,2,3] [10,20,30] = [1,2,3,10,20,30]
 plusPlus :: [a] -> [a] -> [a]
 plusPlus [] l = l
 plusPlus (h:t) l = h : plusPlus t l
 
 --4) calcula o elemento da lista que se encontra nessa posição
+-- > (!!) [10,20,30] 1 = 20
 intInt :: [a] -> Int -> a
 intInt (h:_) 0 = h
 intInt (_:t) l = intInt t (l-1)
 
 --5) dada uma lista calcula uma lista com os elementos dessa lista pela ordem inversa
+-- > reverse [10,20,30] = [30,20,10]
 reverse1 :: [a] -> [a]
 reverse1 [] = []
 reverse1 (h:t) = t ++ reverse [h]

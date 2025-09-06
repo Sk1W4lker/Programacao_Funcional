@@ -3,44 +3,44 @@ import Data.Char
 
 --1)
 
---a)
+--a) calcula o per ́ımetro de uma circunferˆencia, dado o comprimento do seu raio.
 perimetro :: Double -> Double
 perimetro l = 2*pi*l
 
---b)
+--b) calcula a distˆancia entre dois pontos no plano Cartesiano
 dist :: (Double, Double) -> (Double, Double) -> Double
 dist (x,y) (x2,y2) = sqrt((x-x2)^2 + (y-y2)^2)
 
---c)
+--c) recebe uma lista e devolve um par com o primeiro e o  ́ultimo
 primUlt :: [a] -> (a,a)
 primUlt l = (head l, last l)
 
---d)
+--d) testa se é multiplo
 multiplo :: Int -> Int -> Bool
 multiplo x y = mod x y == 0
 
---e)
+--e)  recebe uma lista e, se o comprimento da lista for  ́ımpar retira-lhe o primeiro elemento, caso contr ́ario devolve a pr ́opria lista.
 truncaImpar :: [a] -> [a]
 truncaImpar l = if mod (length l) 2 == 0 then l
             else tail l
 
---f)
+--f) calcula o maior de dois n ́umeros inteiros
 max2 :: Int -> Int -> Int
 max2 x y = if x > y then x else y
 
---g)
+--g) calcula o maior de trˆes n ́umeros inteiros, usando a fun ̧c ̃ao max2
 max3 :: Int -> Int -> Int -> Int
 max3 a b c = max2(max2 a b) c
 
 --2
---a)
+--a)  recebe os (3) coeficientes de um polin omio de 2o grau e que calcula o n ́umero de ra ıze
 nRaizes :: (Double, Double, Double) -> Int 
 nRaizes (a,b,c) | b^2 - 4*a*c == 0 = 1
                 | b^2 - 4*a*c > 1 = 2
                 | b^2 - 4*a*c < 1 = 0
                 | otherwise = 0
 
---b)
+--b)  recebe os coeficientes do polin ́omio e calcula a lista das suas ra ızes reais
 raizes :: (Double, Double, Double) -> [Double]
 raizes (a,b,c)  | n == 2 = [(-b + sqrt(b ^ 2 - 4 * a * c))/(2*a), (-b-sqrt(b ^ 2 - 4 * a * c))/(2*a)]
                 | n == 1 = [-b / (2*a)]
@@ -48,34 +48,36 @@ raizes (a,b,c)  | n == 2 = [(-b + sqrt(b ^ 2 - 4 * a * c))/(2*a), (-b-sqrt(b ^ 2
                 where n = nRaizes(a,b,c)
 
 --3)
+
 type Hora = (Int,Int)
 
---a)
+--a) testar se um par de inteiros representa uma hora do dia v ́alida;
 validaHora :: Hora -> Bool
 validaHora (h,m) = h >= 0 && h <= 23 && m >= 0 && m <= 59
 
---b)
+--b) testar se uma hora  ́e ou n ̃ao depois de outra (compara ̧c ̃ao);
 horaDepois :: Hora -> Hora -> Bool
 horaDepois (h,m) (h2,m2) = h == h2 && m > m2 || h > h2
 
---c)
+--c) converter um valor em horas (par de inteiros) para minutos (inteiro);
 converteHoras :: Hora -> Int
 converteHoras (h,m) = h*60+m
 
---d) 
+--d) converter um valor em minutos para horas;
 converteMinutosHoras :: Int -> Hora
 converteMinutosHoras l = (div l 60, mod l 60)
 
---e)
+--e) calcular a diferenca entre duas horas (cujo resultado deve ser o numero de minutos)
 diferencaHoras :: Hora -> Hora -> Int
 diferencaHoras (h,m) (h2,m2) = (h-h2)*60 + (m-m2)
 
---f)
+--f) adicionar um determinado numero de minutos a uma dada hora
 adicionaMinutos :: Hora -> Int -> Hora
 adicionaMinutos (h,m) n = (h+ hr,mr)
     where (hr,mr) = converteMinutosHoras (m+n)
 
---4)
+--4) Repita o exercicio anterior usando data HoraH
+
 data HoraH = H Int Int deriving (Show,Eq)
 
 --a)
@@ -105,18 +107,18 @@ adicionaMinutos1 (H h m) n = H (h + hr) mr
 
 data Semaforo = Verde | Amarelo | Vermelho deriving (Show,Eq)
 
---a)
+--a) calcula o pr ́oximo estado de um sem ́aforo
 next :: Semaforo -> Semaforo
 next Verde = Amarelo
 next Amarelo = Vermelho
 next Vermelho = Verde
 
---b)
+--b) determina se é obrigatorio parar num sem ́aforo.
 stop :: Semaforo -> Bool
 stop Vermelho = True
 stop _ = False
 
---c)
+--c) testa se o estado de dois sem ́aforos num cruzamento ́e seguro
 safe :: Semaforo -> Semaforo -> Bool
 safe Vermelho _ = True
 safe _ Vermelho = True
@@ -126,39 +128,41 @@ safe _ _ = False
 data Ponto = Cartesiano Double Double | Polar Double Double
             deriving (Show,Eq)
 
---a)
+--a) calcula a distˆancia de um ponto ao eixo vertical.
 posx :: Ponto -> Double
 posx (Cartesiano x y) = x
 posx (Polar r a) = r * cos a
 
---b)
+--b) calcula a distˆancia de um ponto ao eixo horizontal.
 posy :: Ponto -> Double
 posy (Cartesiano x y) = y
 posy (Polar r a) = r * sin a
 
---c)
+--c) calcula a distˆancia de um ponto `a origem.
 raio :: Ponto -> Double
 raio (Cartesiano x y) = sqrt (x^2 + y^2)
 raio (Polar r a) = r
 
---d) 
+--d) calcula o ˆangulo entre o vector que liga a origem a um ponto e o eixo horizontal.
 angulo :: Ponto -> Double
 angulo (Cartesiano x y) = atan (y/x)
 angulo (Polar r a) = a
 
---e)
+--e) calcula a distˆancia entre dois pontos
 dist1 :: Ponto -> Ponto -> Double
 dist1 p1 p2 = sqrt ((x1 - x)^2 + (y1-y)^2)
     where x = posx p1
           y = posy p1
           x1 = posx p2
           y1 = posy p2
+
 --7)
 data Figura = Circulo Ponto Double
             | Retangulo Ponto Ponto
             | Triangulo Ponto Ponto Ponto
               deriving (Show,Eq)
---a)
+
+--a) testa se uma figura  ́e um pol ́ıgono
 poligono :: Figura -> Bool
 poligono (Circulo _ _) = False --circulos não são poligonos
 poligono (Retangulo p1 p2) = posx p1 /= posx p2 && posy p1 /= posy p2
@@ -169,13 +173,13 @@ poligono (Triangulo p1 p2 p3) = posx p1 /= posx p2 ||
                                 posy p1 /= posy p2 ||
                                 posy p2 /= posy p3 ||
                                 posy p1 /= posy p3
---b)
+--b) calcula a lista dos vertices de uma figura.
 vertices :: Figura -> [Ponto]
 vertices (Circulo _ _) = []
 vertices (Retangulo p1 p2) = [p1, Cartesiano (posx p1) (posy p2), p2, Cartesiano (posx p2) (posy p1)]
 vertices (Triangulo p1 p2 p3) = [p1, p2, p3]
 
---c)
+--c) area de uma figura
 area :: Figura -> Double
 area (Circulo _ r) = pi*r^2
 area (Retangulo p1 p2) = abs (posx p2 - posx p1) * abs (posy p2 - posy p1)
@@ -185,7 +189,7 @@ area (Triangulo p1 p2 p3) = let a = dist1 p1 p2
                                 s = (a+b+c) / 2 -- semi-perimetro
                                 in sqrt (s*(s-a)*(s-b)*(s-c)) -- formula de Heron
 
---d)
+--d) calcula o perımetro de uma figura.
 perimetro1 :: Figura -> Double
 perimetro1 (Circulo _ r) = 2*pi*r
 perimetro1 (Retangulo p1 p2) = abs(posx p2 - posx p1) * 2 + abs(posy p2 - posy p1) * 2
@@ -201,18 +205,18 @@ isLower1 a = ord a >= ord 'a' && ord a <= ord 'z'
 isDigit1 :: Char -> Bool
 isDigit1 a = ord a >= ord '0' && ord a <= ord '9'
 
---c)
+--c) testa se um Char  ́e uma letra
 isAlpha1 :: Char -> Bool
 isAlpha1 a = ord a >= ord 'A' && ord a <= ord 'z'
 
---d)
+--d) converte uma letra para a respectiva mai ́uscula
 toUpper1 :: Char -> Char
 toUpper1 ch = if isLower1 ch then chr ((ord ch) - 32) else ch
 
---e)
+--e) converte um n ́umero entre 0 e 9 para o respectivo digito.
 intToDigit1 :: Int -> Char
 intToDigit1 a = chr (a + 48)
 
---f)
+--f) converte um digito para o respectivo inteiro.
 digitToInt1 :: Char -> Int
 digitToInt1 a = ord (a) - 48

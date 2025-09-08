@@ -178,7 +178,7 @@ calcula n ((x,y):t) = x * (n ^ y) + calcula n t
 --f) que retira de um polin ́omio os mon ́omios de coeficiente zero.
 simp :: Polinomio -> Polinomio
 simp [] = []
-simp ((x,y):t) | y == 0 = simp t
+simp ((x,y):t) | x == 0 = simp t
                | otherwise = (x,y) : simp t
 
 --g)que calcula o resultado da multiplica ̧c ̃ao de um mon ́omio por um polin ́omio.

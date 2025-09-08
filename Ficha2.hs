@@ -215,6 +215,7 @@ produto (x:y) p = (mult x p) ++ produto y p
 --k) que ordena um polon ́omio por ordem crescente dos graus dos seus monomios.
 ordena :: Polinomio -> Polinomio
 ordena [] = []
+ordena (h:t) = ordenaAux h (ordena t) --Se colocar ordena t sem parentisis o haskell interpreta como (ordenaAux h ordena) t, a função pensa que estou a tentar aplicar a 3 argumentos
 
 ordenaAux :: Monomio -> Polinomio -> Polinomio
 ordenaAux _ [] = []

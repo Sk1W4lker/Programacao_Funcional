@@ -162,7 +162,6 @@ isSuffixOf (h:t) (h2:t2) | h == head t2 = isSuffixOf t t2
                          | otherwise = False
 
 --24) > isSubsequenceOf [20,40] [10,20,30,40] = True > isSubsequenceOf [40,20] = [10,20,30,40]
-False
 isSubsequenceOf :: Eq a => [a] -> [a] -> Bool
 isSubsequenceOf [] _ = True
 isSubsequenceOf _ [] = False
@@ -331,11 +330,6 @@ eQuadrado :: Rectangulo -> Bool
 eQuadrado (Rect (x,y) (x1,y1)) = abs (y1 - y) == abs (x1 - x)
 
 --49) > areaTotal [Rect (0,0) (2,2), Rect (1,3) (7,4), Rect (5,2) (8,5), Rect (1,2) (2,4)] = 21.0
-type Ponto = (Float,Float)
-data Rectangulo = Rect Ponto Ponto
-
-type Ponto = (Float,Float)
-data Rectangulo = Rect Ponto Ponto
 
 areaTotal :: [Rectangulo] -> Float
 areaTotal [] = 0

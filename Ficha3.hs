@@ -77,3 +77,182 @@ tempoTotalViagem' v = diferencaHoras hf hi
     where (hi,hf) = partidaEChegada v
 -}
 
+--2)
+type Poligonal = [Ponto]
+
+data Ponto = Cartesiano Double Double | Polar Double Double deriving (Show,Eq)
+
+--Auxiliares
+--a) calcula a distˆancia de um ponto ao eixo vertical.
+posx :: Ponto -> Double
+posx (Cartesiano x y) = x
+posx (Polar r a) = r * cos a
+
+--b) calcula a distˆancia de um ponto ao eixo horizontal.
+posy :: Ponto -> Double
+posy (Cartesiano x y) = y
+posy (Polar r a) = r * sin a
+
+--c) calcula a distˆancia de um ponto `a origem.
+raio :: Ponto -> Double
+raio (Cartesiano x y) = sqrt (x^2 + y^2)
+raio (Polar r a) = r
+
+--d) calcula o ˆangulo entre o vector que liga a origem a um ponto e o eixo horizontal.
+angulo :: Ponto -> Double
+angulo (Cartesiano x y) = atan (y/x)
+angulo (Polar r a) = a
+
+--e) calcula a distˆancia entre dois pontos
+dist1 :: Ponto -> Ponto -> Double
+dist1 p1 p2 = sqrt ((x1 - x)^2 + (y1-y)^2)
+    where x = posx p1
+          y = posy p1
+          x1 = posx p2
+          y1 = posy p2
+
+--a) Defina a fun ̧c ̃ao para calcular o comprimento de uma linha poligona
+calculaComprimento :: Poligonal -> Double
+calculaComprimento [] = 0
+calculaComprimento (x1:x2:t) = (dist1 x1 x2) + calculaComprimento t 
+
+--b) Defina uma fun ̧c ̃ao para testar se uma dada linha poligonal  ́e ou n ̃ao fechada.
+testaLinha :: Poligonal -> Bool
+testaLinha p = length p >= 3 && head p == last p --Como tem deriving eq o haskell compara ponto como Cartesiano 3 4 == Cartesiano 3 4 que é True
+
+--c) Defina a função triangula :: Poligonal -> [Figura] que, dada uma linha poligonal fechada e convexa, calcule uma lista de triângulos cuja soma das áreas seja igual à àrea delimitada pela linha poligonal. O tipo Figura é idêntico ao definido na Ficha 1. triangula :: Poligonal -> [Figura]
+data Figura = Circulo Ponto Double | Rectangulo Ponto Ponto | Triangulo Ponto Ponto Ponto deriving (Show,Eq)
+
+triangula :: Poligonal -> [Figura]
+triangula (p1:p2:p3:ps)
+    | p1 == p3 = [] --Parar a recursão quando chegamos ao ultimo traingulo, em um poligonal fechado se p1 é igual a p3 não á mais triangulos a formar
+    | otherwise = Triangulo p1 p2 p3 : triangula (p1:p3:ps) -- Cria o primeiro traingulo, e chama recursivamente avançando para os proximos
+triangula _ = []
+
+--d) Defina uma fun ̧c ̃ao para calcular a  ́area delimitada por uma linha poligonal fechada e convexa.
+
+--Auxiliares
+area :: Figura -> Double
+area (Circulo _ r) = pi*r^2
+area (Rectangulo p1 p2) = abs (posx p2 - posx p1) * abs (posy p2 - posy p1)
+area (Triangulo p1 p2 p3) = let a = dist1 p1 p2
+                                b = dist1 p2 p3
+                                c = dist1 p3 p1
+                                s = (a+b+c) / 2 -- semi-perimetro
+                                in sqrt (s*(s-a)*(s-b)*(s-c)) -- formula de Heron
+
+areaPol :: Poligonal -> Double
+areaPol p = areaTris (triangula p)
+
+areaTris :: [Figura] -> Double
+areaTris [] = 0
+areaTris (h:t) = area h + areaTris t
+
+--e) Defina a fun ̧c ̃ao triangula :: Poligonal -> [Figura] que, dada uma linha poligonal fechada e convexa, calcule uma lista de triˆangulos cuja soma das  ́areas seja igual `a  ́area delimitada pela linha poligonal. O tipo Figura  ́e idˆentico ao definido na Ficha 1
+mover :: Poligonal -> Ponto -> Poligonal
+mover pol p = p : pol
+
+--f) Defina a função zoom :: Double -> Poligonal -> Poligonal que, dada um fator de escala e uma linha poligonal, dê como resultado uma linha poligonal semelhante e com o mesmo ponto inicial mas em que o comprimento de cada segmento de reta é multiplicado pelo fator dado.
+zoom :: Double -> Poligonal -> Poligonal
+zoom z (h:t) = mover (doZoom z h t) h
+
+doZoom :: Double -> Ponto -> Poligonal -> Poligonal
+doZoom z p [] = []
+doZoom z p (h:t) = Cartesiano ((x - xp) * z + xp) ((y - yp) * z + yp) : doZoom z p t
+    where x = posx h
+          y = posy h
+          xp = posx p
+          yp = posy p
+
+--4)
+data Contacto = Casa Integer | Trab Integer | Tlm Integer | Email String deriving Show
+type Nome = String
+type Agenda = [(Nome, [Contacto])]
+
+--a) Defina a fun ̧cao que, dado um nome, um email e uma agenda, acrescenta essa informacao á agenda.
+acrescEmail :: Nome -> String -> Agenda -> Agenda
+acrescEmail nome email [] = [(nome, [Email email])]
+acrescEmail nome email ((n,cs):t)
+    | nome == n = (n, Email email : cs) : t
+    | otherwise = (n, cs) : acrescEmail nome email t
+
+
+--b) Defina a fun ̧c ̃ao verEmails :: Nome -> Agenda -> Maybe [String] que, dado um nome e uma agenda, retorna a lista dos emails associados a esse nome. Se esse nome n ̃ao existir na agenda a fun ̧c ̃ao deve retornar Nothing.
+verEmails :: Nome -> Agenda -> Maybe [String]
+verEmails name [] = Nothing
+verEmails name ((n,cs):t) | name == n = Just (soEmails cs)
+                          | otherwise = verEmails name t
+
+soEmails :: [Contacto] -> [String]
+soEmails [] = []
+soEmails (Email s : t) = s : soEmails t
+soEmails (_:t) = soEmails t
+
+--c)Defina a fun ̧c ̃ao consTelefs :: [Contacto] -> [Integer] que, dada uma lista de contactos, retorna a lista de todos os n ́umeros de telefone dessa lista (tanto telefones fixos como telemoveis
+consTelefs :: [Contacto] -> [Integer]
+consTelefs [] = []
+consTelefs (Casa n : t) = n : consTelefs t
+consTelefs (Trab n : t) = n : consTelefs t
+consTelefs (Tlm n : t) = n : consTelefs t
+
+--d) Defina a fun ̧c ̃ao casa :: Nome -> Agenda -> Maybe Integer que, dado um nome e uma agenda, retorna o n ́umero de telefone de casa (caso exista)
+casa :: Nome -> Agenda -> Maybe Integer
+casa name [] = Nothing
+casa name ((n,cs):t) | name == n = soCasa cs
+                     | otherwise = casa name t
+soCasa :: [Contacto] -> Maybe Integer
+soCasa [] = Nothing
+soCasa (Casa n : t) = Just n
+soCasa (_:t) = soCasa t
+
+--4)Pretende-se guardar informa ̧c ̃ao sobre os anivers ́arios das pessoas numa tabela que
+-- associa o nome de cada pessoa `a sua data de nascimento. Para isso, declarou-se a
+-- seguinte estrutura de dados
+
+type Dia = Int
+type Mes = Int
+type Ano = Int
+data Data = D Dia Mes Ano deriving Show
+type TabDN = [(Nome,Data)]
+
+--a) Defina a fun ̧c ̃ao procura :: Nome -> TabDN -> Maybe Data, que indica a data de nascimento de uma dada pessoa, caso o seu nome exista na tabela.
+procura :: Nome -> TabDN -> Maybe Data
+procura name [] = Nothing
+procura name ((x,y):t) | name == x = Just y
+                       | otherwise = procura name t 
+
+--b) Defina a fun ̧c ̃ao idade :: Data -> Nome -> TabDN -> Maybe Int, que calcula a idade de uma pessoa numa dada data
+idade :: Data -> Nome -> TabDN -> Maybe Int
+idade _ _ [] = Nothing
+idade date name ((x,y):t) | name == x = Just (calculaIdade date y) 
+                          | otherwise = idade date name t
+            
+calculaIdade :: Data -> Data -> Int
+calculaIdade (D d m a) (D d1 m1 a1) | m < m1 || m == m1 && d1 < d = a - a1 --Já fez anos ou seja date é depois do aniversario
+                                    | otherwise = a - a1 - 1--Ainda não fez anos
+
+--c)Defina a fun ̧c ̃ao anterior :: Data -> Data -> Bool, que testa se uma data  ́e anterior a outra data.
+anterior :: Data -> Data -> Bool
+anterior (D d m a) (D d1 m1 a1) = a < a1 || a == a1 && m < m1 || a == a1 && m1 == m && d < d1
+{-
+Exemplo
+ghci> anterior (D 10 6 2024) (D 15 6 2024)
+True
+-}
+--d) Defina a fun ̧c ̃ao ordena :: TabDN -> TabDN, que ordena uma tabela de datas de nascimento, por ordem crescente das datas de nascimento.
+ordena :: TabDN -> TabDN 
+ordena [] = []
+ordena ((n,d):t) = ordenaAux (n,d) (ordena t)
+
+ordenaAux :: (Nome, Data) -> TabDN -> TabDN
+ordenaAux (n,d) [] = [(n,d)]
+ordenaAux (n,d) ((n1,d1):t) | anterior d d1 = (n,d) : (n1, d1) : t
+                            | otherwise = (n1,d1) : ordenaAux (n,d) t
+
+--e) Defina a função porIdade:: Data -> TabDN -> [(Nome,Int)] que apresenta o nome e a idade das pessoas, numa dada data, por ordem crescente da idade das pessoas.
+porIdade :: Data -> TabDN -> [(Nome,Int)]
+porIdade data tabela = porIdadeAux data (ordena tabela)
+
+porIdadeAux :: Data -> TabDN -> [(Nome,Int)]
+porIdadeAux _ [] = []
+porIdadeAux d ((nh,dh):t) = porIdadeAux d t ++ [(nh, calculaIdade dh d)]

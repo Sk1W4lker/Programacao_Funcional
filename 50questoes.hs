@@ -5,6 +5,13 @@ enumFromTo1 start end
     | start > end = []
     | otherwise = start : enumFromTo1 (start + 1) end
 
+--ou
+
+asc :: Int -> Int -> [Int]
+asc start end | start > end = []
+              | start == end = [end]
+              | start < end = start : asc (start + 1) end
+
 --2) constrói a lista dos números inteiros compreendidos entre dois limites e espaçados de um valor constante.
 -- > enumFromThenTo 1 3 10 = [1,3,5,7,9]
 enumFromThenTo1 :: Int -> Int -> Int -> [Int]
@@ -34,6 +41,7 @@ reverse1 (h:t) = t ++ reverse [h]
 --6) > take 2 [10,20,30] = [10,20]
 take1 :: Int -> [a] -> [a]
 take1 0 (h:t) = t
+take1 _ [] = []
 take1 l (h:t) = h : take1 (l-1) t
 --ou
 --take _ [] = []
@@ -44,6 +52,7 @@ take1 l (h:t) = h : take1 (l-1) t
 --7) > drop 2 [10,20,30] = [30]
 drop1 :: Int -> [a] -> [a]
 drop1 0 l = l
+drop1 _ [] = []
 drop1 l (h:t) = drop1 (l-1) t
 
 --8)> zip [1,2,3] [10,20,30,40] = [(1,10),(2,20),(3,30)]
@@ -55,8 +64,7 @@ zip1 (h:t) (h1:t1) = (h,h1) : zip1 t t1
 --9) > replicate 3 10 = [10,10,10]
 replicate1 :: Int -> a -> [a]
 replicate1 0 _ = []
-replicate1 n x | n < 0 = []
-               | otherwise = x : replicate (n - 1) x
+replicate1 n x = x : replicate (n - 1) x
 
 --10)> intersperce 1 [10,20,30] = [10,1,20,1,30]
 intersperse1 :: a -> [a] -> [a]
@@ -70,11 +78,11 @@ intersperse1 l (h:t) | length (h:t) == 1 = [h]
 --intersperse x (h:t) = h : x : intersperse
 
 --11) > group [1,2,2,3,4,4,4,5,4] = [[1],[2,2],[3],[4,4,4],[5],[4]]
-group :: Eq a => [a] -> [[a]]
-group [] = []
-group [x] = [[x]]
-group (h:t) | h `elem` head (group t) = (h : (head (group t))) : tail (group t) 
-            | otherwise = [h] : group t
+group1 :: Eq a => [a] -> [[a]]
+group1 [] = []
+group1 [x] = [[x]]
+group1 (h:t) | h == head (head (group1 t)) = (h : (head (group1 t))) : tail (group1 t) 
+             | otherwise = [h] : group1 t
 
 --12) > concat [[1],[2,2],[3],[4,4,4],[5],[4]] = [1,2,2,3,4,4,4,5,4]
 concat1 :: [[a]] -> [a]
@@ -97,7 +105,7 @@ inits [] ++ [11] ++ [11,21] ++ [11,21,13]
 --14) > tails [1,2,3] = [[1,2,3],[2,3],[3],[]]
 tails :: [a] -> [[a]]
 tails [] = [[]]
-tails (h:t) = (h:t) : tails (tail (h:t)) 
+tails x = [x] ++ tails(tail x)
 
 --15) > heads [[2,3,4],[1,7],[],[8,5,3]] = [2,1,8]
 heads :: [[a]] -> [a]
@@ -158,8 +166,8 @@ isPrefixOf (h:t) (h2:t2) | h == h2 = isPrefixOf t t2
 isSuffixOf :: Eq a => [a] -> [a] -> Bool
 isSuffixOf [] _ = True
 isSuffixOf _ [] = False
-isSuffixOf (h:t) (h2:t2) | h == head t2 = isSuffixOf t t2
-                         | otherwise = False
+isSuffixOf (h:t) (h2:t2) = h == head t2 && isSuffixOf t t2
+
 
 --24) > isSubsequenceOf [20,40] [10,20,30,40] = True > isSubsequenceOf [40,20] = [10,20,30,40]
 isSubsequenceOf :: Eq a => [a] -> [a] -> Bool
@@ -283,8 +291,8 @@ insereMSet a ((x,y):t) | a == x = (x,y+1) : t
 --42) > removeMSet ’c’ [(’b’,2), (’a’,4), (’c’,1)] = [(’b’,2),(’a’,4)]
 removeMSet :: Eq a => a -> [(a,Int)] -> [(a,Int)]
 removeMSet a [] = []
-removeMSet a ((x,y):t) | a == x && y > 1 = (x,y-1) : removeMSet a t
-                       | a == x && y == 1 = removeMSet a t
+removeMSet a ((x,y):t) | a == x && y > 1 = (x,y-1) : t
+                       | a == x && y == 1 = t
                        | otherwise = (x,y) : removeMSet a t
 
 --43) > constroiMSet "aaabccc" = [(’a’,3), (’b’,1), (’c’,3)]
@@ -314,10 +322,21 @@ caminho :: (Int,Int) -> (Int,Int) -> [Movimento]
 caminho (x,y) (x1,y1) | x < x1 = Este : caminho (x+1,y) (x1,y1)     
                       | x > x1 = Oeste : caminho (x-1,y) (x1,y1)
                       | y < y1 = Norte : caminho (x,y+1) (x1,y1)
-                      | y > y1 = Sul : caminho (x,y+1) (x1,y1)
+                      | y > y1 = Sul : caminho (x,y-1) (x1,y1)
                       | otherwise = []
+--47) > hasLoops (0,0) [Norte, Norte, Este, Sul, Oeste, Sul, Este, Norte, Este] = True > hasLoops (2,1) [Sul, Este, Sul, Oeste, Norte, Este, Sul] = False
+posicao :: (Int,Int) -> [Movimento] -> (Int,Int)
+posicao p [] = p
+posicao (x, y) (Norte:t) = posicao (x, y + 1) t
+posicao (x, y) (Sul:t) = posicao (x, y - 1) t
+posicao (x, y) (Este:t) = posicao (x + 1, y) t
+posicao (x, y) (Oeste:t) = posicao (x - 1, y) t
 
---48) > hasLoops (0,0) [Norte, Norte, Este, Sul, Oeste, Sul, Este, Norte, Este] = True > hasLoops (2,1) [Sul, Este, Sul, Oeste, Norte, Este, Sul] = False
+hasLoops :: (Int,Int) -> [Movimento] -> Bool
+hasLoops _ [] = False
+hasLoops posi movs = posi == posicao posi movs || hasLoops posi (init movs)
+
+--48) > contaQuadrados [Rect (0,0) (2,2), Rect (1,3) (7,4), Rect (5,2) (8,5), Rect (1,2) (2,4)] = 2
 type Ponto = (Float,Float)
 data Rectangulo = Rect Ponto Ponto
 
@@ -344,3 +363,4 @@ naoReparar [] = 0
 naoReparar (Bom:t) = 1 + naoReparar t
 naoReparar (Razoavel:t) = 1 + naoReparar t
 naoReparar (Avariado:t) = naoReparar t
+

@@ -251,8 +251,51 @@ ordenaAux (n,d) ((n1,d1):t) | anterior d d1 = (n,d) : (n1, d1) : t
 
 --e) Defina a função porIdade:: Data -> TabDN -> [(Nome,Int)] que apresenta o nome e a idade das pessoas, numa dada data, por ordem crescente da idade das pessoas.
 porIdade :: Data -> TabDN -> [(Nome,Int)]
-porIdade data tabela = porIdadeAux data (ordena tabela)
+porIdade date tabela = porIdadeAux date (ordena tabela)
 
 porIdadeAux :: Data -> TabDN -> [(Nome,Int)]
 porIdadeAux _ [] = []
 porIdadeAux d ((nh,dh):t) = porIdadeAux d t ++ [(nh, calculaIdade dh d)]
+
+--5)
+data Movimento = Credito Float | Debito Float deriving Show
+data Extracto = Ext Float [(Data, String, Movimento)] deriving Show
+
+--Construa a função extValor :: Extracto -> Float -> [Movimento] que produz uma lista de todos os movimentos (créditos ou débitos) superiores a um determinado valor.
+extValor :: Extracto -> Float -> [Movimento]
+extValor (Ext _ []) _ = []  -- caso base: lista vazia de movimentos
+extValor (Ext n ((_,_,p):t)) a | getValor p > a = p : extValor (Ext n t) a
+                               | otherwise = extValor (Ext n t) a
+
+getValor :: Movimento -> Float
+getValor (Credito x) = x
+getValor (Debito x) = x
+
+--b Defina a fun ̧c ̃ao filtro :: Extracto -> [String] -> [(Data,Movimento)] que retorna informa ̧c ̃ao relativa apenas aos movimentos cuja descri ̧c ̃ao esteja inclu ́ıda na lista fornecida no segundo parˆametro.
+filtro :: Extracto -> [String] -> [(Data,Movimento)]
+filtro (Ext _ []) _ = []
+filtro (Ext n ((a,d,p):t)) desc | elem d desc = (a,p) : filtro (Ext n t) desc
+                                | otherwise = filtro (Ext n t) desc
+
+--c) Defina a fun ̧c ̃ao creDeb :: Extracto -> (Float,Float), que retorna o total de cr ́editos e de d ́ebitos de um extracto no primeiro e segundo elementos de um par, respectivamente.
+creDeb :: Extracto -> (Float,Float)
+creDeb (Ext _ []) = (0,0)
+creDeb (Ext n ((_,_,Credito x):t)) = (x + xr, tr)
+        where (xr,tr) = creDeb(Ext n t)
+creDeb (Ext n ((_,_,Debito x):t)) = (x, x + tr)
+        where (xr,tr) = creDeb(Ext n t)
+
+--ou
+
+creDeb' :: Extracto -> (Float,Float)
+creDeb' (Ext _ []) = (0,0)
+creDeb' (Ext si ((_,_,mov):t)) = (c + cr, d + dr)
+    where (cr,dr) = creDeb (Ext si t)
+          (c,d) = case mov of Credito x -> (x,0)
+                              Debito x -> (0,x)
+
+--d) Defina a fun ̧c ̃ao saldo :: Extracto -> Float que devolve o saldo final que resulta da execu ̧c ̃ao de todos os movimentos no extracto sobre o saldo inicial
+saldo :: Extracto -> Float
+saldo (Ext n []) = n
+saldo (Ext n ((_,_,Credito x):t)) = saldo (Ext (n+x) t) --Credito adiciona
+saldo (Ext n ((_,_,Debito x):t)) = saldo (Ext (n-x) t) --Debito tira

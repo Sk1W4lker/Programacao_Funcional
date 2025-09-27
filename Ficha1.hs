@@ -47,8 +47,8 @@ max3 a b c = max2(max2 a b) c
 --a)  recebe os (3) coeficientes de um polin omio de 2o grau e que calcula o n ́umero de ra ıze
 nRaizes :: (Double, Double, Double) -> Int 
 nRaizes (a,b,c) | b^2 - 4*a*c == 0 = 1
-                | b^2 - 4*a*c > 1 = 2
-                | b^2 - 4*a*c < 1 = 0
+                | b^2 - 4*a*c > 0 = 2
+                | b^2 - 4*a*c < 0 = 0
                 | otherwise = 0
 
 --b)  recebe os coeficientes do polin ́omio e calcula a lista das suas ra ızes reais

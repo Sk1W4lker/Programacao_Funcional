@@ -113,7 +113,10 @@ diferencaHoras1 (H h1 m1) (H h2 m2) = (h1 - h2) * 60 + (m1 - m2)
 
 --f)
 adicionaMinutos1 :: HoraH -> Int -> HoraH
-adicionaMinutos1 (H h m) n = H (h + hr) mr
+adicionaMinutos1 (H h m) n = minutosParaHora1 (horaParaMinutos1 (H h m) + n)
+
+adicionaMinutos1' :: HoraH -> Int -> HoraH
+adicionaMinutos1' (H h m) n = H (h + hr) mr
     where (H hr mr) = minutosParaHora1 (m + n)
 
 data Semaforo = Verde | Amarelo | Vermelho deriving (Show,Eq)

@@ -1,8 +1,19 @@
-module Ficha01 where
+module Ficha1 where
 import Data.Char
 
---1)
+{-
+> Funções não recursivas
 
+•length l: o numero de elementos da lista l
+•head l: a cabeca da lista (nao vazia) l
+•tail l: a cauda lista (nao vazia) l
+•last l: o  ́ultimo elemento da lista (nao vazia) l
+•sqrt x: a raiz quadrada de x
+•div x y: a divisao inteira de x por y
+•mod x y: o resto da divisao inteira de x por y
+-}
+
+--1)
 --a) calcula o per ́ımetro de uma circunferˆencia, dado o comprimento do seu raio.
 perimetro :: Double -> Double
 perimetro l = 2*pi*l
@@ -42,9 +53,9 @@ nRaizes (a,b,c) | b^2 - 4*a*c == 0 = 1
 
 --b)  recebe os coeficientes do polin ́omio e calcula a lista das suas ra ızes reais
 raizes :: (Double, Double, Double) -> [Double]
-raizes (a,b,c)  | n == 2 = [(-b + sqrt(b ^ 2 - 4 * a * c))/(2*a), (-b-sqrt(b ^ 2 - 4 * a * c))/(2*a)]
-                | n == 1 = [-b / (2*a)]
-                | n == 0 = []
+raizes (a,b,c)  | nRaizes (a,b,c) == 2 = [(-b + sqrt(b ^ 2 - 4 * a * c))/(2*a), (-b-sqrt(b ^ 2 - 4 * a * c))/(2*a)]
+                | nRaizes (a,b,c) == 1 = [-b / (2*a)]
+                | nRaizes (a,b,c) == 0 = []
                 where n = nRaizes(a,b,c)
 
 --3)
